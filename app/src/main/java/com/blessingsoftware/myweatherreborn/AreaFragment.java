@@ -1,6 +1,7 @@
 package com.blessingsoftware.myweatherreborn;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -72,6 +73,13 @@ public class AreaFragment extends Fragment {
                     queryCities();
                 }else if(currentlevel==level_city){
                     selectedCity=cityList.get(position);
+                    queryCounties();
+                }else if(currentlevel==level_county){
+                    String weatherID=countyList.get(position).getWeatherID();
+                    Intent intent=new Intent(getActivity(),WeatherActivity.class);
+                    intent.putExtra("weather_id",weatherID);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
