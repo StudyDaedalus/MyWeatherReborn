@@ -1,0 +1,11 @@
+<litepal>
+    <dbname value="MyWeatherReborn"/>
+    <version value="1"/>
+
+    <list>
+        <mapping class="com.blessingsoftware.myweatherreborn.DB.City"/>
+        <mapping class="com.blessingsoftware.myweatherreborn.DB.County"/>
+        <mapping class="com.blessingsoftware.myweatherreborn.DB.Province"/>
+    </list>
+
+</litepal>
