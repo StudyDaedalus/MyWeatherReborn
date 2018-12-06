@@ -3,6 +3,7 @@ package com.blessingsoftware.myweatherreborn;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,9 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
+
+    public SwipeRefreshLayout swipeRefresh;
+
     private ScrollView weatherLayout;
 
     private TextView titleCity;
@@ -52,6 +56,8 @@ public class WeatherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
         //初始化各项控件
+        swipeRefresh=(SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         weatherLayout=(ScrollView)findViewById(R.id.weather_layout);
         titleCity=(TextView)findViewById(R.id.title_city);
         titleUpdateTime=(TextView)findViewById(R.id.title_update_time);
@@ -66,13 +72,22 @@ public class WeatherActivity extends AppCompatActivity {
 
         SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString=prefs.getString("weather",null);
+        final String weatherId;
         if(weatherString!=null){
             Weather weather=GsUtil.WeatherResponse(weatherString);
+            weatherId=weather.basic.weatherID;
             showWeatherInfo(weather);
         }else {
+            weatherId=getIntent().getStringExtra("weather_id");
             String weatherID=getIntent().getStringExtra("weather_id");
             requestWeather(weatherID);
         }
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeather(weatherId);
+            }
+        });
     }
 
     public void requestWeather(final String weatherID){
@@ -88,6 +103,7 @@ public class WeatherActivity extends AppCompatActivity {
                         Toast.makeText(WeatherActivity.this, "获取天气信息失败！", Toast.LENGTH_SHORT).show();
                     }
                 });
+                swipeRefresh.setRefreshing(false);
             }
 
             @Override
@@ -105,6 +121,7 @@ public class WeatherActivity extends AppCompatActivity {
                         }else{
                             Toast.makeText(WeatherActivity.this,"获取天气信息失败！",Toast.LENGTH_SHORT).show();
                         }
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
